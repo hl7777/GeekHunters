@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="GeekHunterModelStoreContainer" CdmEntityContainer="GeekHunterEntities">
+    <EntitySetMapping Name="AdminUsers">
+      <EntityTypeMapping TypeName="GeekHunterModel.AdminUser">
+        <MappingFragment StoreEntitySet="AdminUsers">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Candidates">
+      <EntityTypeMapping TypeName="GeekHunterModel.Candidate">
+        <MappingFragment StoreEntitySet="Candidate">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CandidateSkills">
+      <EntityTypeMapping TypeName="GeekHunterModel.CandidateSkill">
+        <MappingFragment StoreEntitySet="CandidateSkill">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="CandidateId" ColumnName="CandidateId" />
+          <ScalarProperty Name="SkillId" ColumnName="SkillId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Skills">
+      <EntityTypeMapping TypeName="GeekHunterModel.Skill">
+        <MappingFragment StoreEntitySet="Skill">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

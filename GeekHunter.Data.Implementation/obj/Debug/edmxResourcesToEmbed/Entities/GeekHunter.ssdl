@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="GeekHunterModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="AdminUsers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="Password" Type="varchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Candidate">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FirstName" Type="varchar(max)" />
+    <Property Name="LastName" Type="varchar(max)" />
+  </EntityType>
+  <EntityType Name="CandidateSkill">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CandidateId" Type="int" Nullable="false" />
+    <Property Name="SkillId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Skill">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="varchar(max)" />
+  </EntityType>
+  <Association Name="FK_CandidateSkill_Candidate">
+    <End Role="Candidate" Type="Self.Candidate" Multiplicity="1" />
+    <End Role="CandidateSkill" Type="Self.CandidateSkill" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Candidate">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="CandidateSkill">
+        <PropertyRef Name="CandidateId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CandidateSkill_Skill">
+    <End Role="Skill" Type="Self.Skill" Multiplicity="1" />
+    <End Role="CandidateSkill" Type="Self.CandidateSkill" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Skill">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="CandidateSkill">
+        <PropertyRef Name="SkillId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="GeekHunterModelStoreContainer">
+    <EntitySet Name="AdminUsers" EntityType="Self.AdminUsers" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Candidate" EntityType="Self.Candidate" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="CandidateSkill" EntityType="Self.CandidateSkill" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Skill" EntityType="Self.Skill" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_CandidateSkill_Candidate" Association="Self.FK_CandidateSkill_Candidate">
+      <End Role="Candidate" EntitySet="Candidate" />
+      <End Role="CandidateSkill" EntitySet="CandidateSkill" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CandidateSkill_Skill" Association="Self.FK_CandidateSkill_Skill">
+      <End Role="Skill" EntitySet="Skill" />
+      <End Role="CandidateSkill" EntitySet="CandidateSkill" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
