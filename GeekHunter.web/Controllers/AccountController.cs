@@ -100,11 +100,9 @@ namespace GeekHunter.Controllers
                 {
                     model.Success=false;
                     model.Message = "Failed to register.";
-                }
-                
+                }                
             }
-
-            // If we got this far, something failed, redisplay form
+            
             return View(model);
         }
 
