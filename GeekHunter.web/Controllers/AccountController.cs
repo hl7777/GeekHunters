@@ -1,0 +1,200 @@
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Web;
+using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
+using GeekHunter.Models;
+using GeekHunter.Data.Implementation.Responsitories;
+using GeekHunter.Data.Implementation.Entities;
+using GeekHunter.Data.Implementation.DTO;
+
+namespace GeekHunter.Controllers
+{
+    [Authorize]
+    public class AccountController : Controller
+    {
+        public AccountController()
+        {
+        }
+        
+
+        //
+        // GET: /Account/Login
+        [AllowAnonymous]
+        public ActionResult Login(string returnUrl)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
+
+        //
+        // POST: /Account/Login
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult Login(LoginViewModel model, string returnUrl)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var accontRep = new AccountResponsitory(new GeekHunterEntities());
+            bool loginSuccess = accontRep.Login(model.UserName, model.Password);
+            if (loginSuccess == true)
+            {
+                var identity = new ClaimsIdentity(new[]
+                    {
+                        new Claim(ClaimTypes.Name, model.UserName),
+                        new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider",
+                            "ASP.NET Identity", "http://www.w3.org/2001/XMLSchema#string")
+                    },
+                    DefaultAuthenticationTypes.ApplicationCookie);
+
+                HttpContext.GetOwinContext().Authentication.SignIn(identity);
+
+                return RedirectToAction("Index", "Manage");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Invalid username or password");
+                return View();
+            }
+        }
+        
+
+        //
+        // GET: /Account/Register
+        [AllowAnonymous]
+        public ActionResult Register()
+        {
+            var model = new RegisterViewModel();
+            var rep = new SkillResponsitory(new GeekHunterEntities());
+            model.Skills = rep.GetAll().Select(x => new SkillModel()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Selected = false
+            }).ToList();
+            return View(model);
+        }
+
+        //
+        // POST: /Account/Register
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var rep = new CandidateRepository(new GeekHunterEntities());
+                var cadidate = ConvertCandidateModelToObject(model);
+                try
+                {
+                    rep.Register(cadidate);
+                    model.Success = true;
+                    model.Message = "Candidate was register successfully.";
+                }
+                catch (Exception e)
+                {
+                    model.Success=false;
+                    model.Message = "Failed to register.";
+                }
+                
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+
+        private CandidateObject ConvertCandidateModelToObject(RegisterViewModel model)
+        {
+            var candidateObject = new CandidateObject();
+            candidateObject.FirstName = model.FirstName;
+            candidateObject.LastName = model.LastName;
+            candidateObject.Skills = model.Skills.Where(x => x.Selected == true)
+                                                .Select(x => new Skill()
+                                                {
+                                                    Name = x.Name,
+                                                    Id = x.Id
+                                                }).ToList();
+
+            return candidateObject;
+        }
+
+
+        [HttpPost]
+        public ActionResult LogOff()
+        {
+            var ctx = Request.GetOwinContext();
+            var authManager = ctx.Authentication;
+
+            authManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            return RedirectToAction("Index", "Home");
+        }
+
+       
+
+
+        //#region Helpers
+        //// Used for XSRF protection when adding external logins
+        //private const string XsrfKey = "XsrfId";
+
+        //private IAuthenticationManager AuthenticationManager
+        //{
+        //    get
+        //    {
+        //        return HttpContext.GetOwinContext().Authentication;
+        //    }
+        //}
+
+        //private void AddErrors(IdentityResult result)
+        //{
+        //    foreach (var error in result.Errors)
+        //    {
+        //        ModelState.AddModelError("", error);
+        //    }
+        //}
+
+        //private ActionResult RedirectToLocal(string returnUrl)
+        //{
+        //    if (Url.IsLocalUrl(returnUrl))
+        //    {
+        //        return Redirect(returnUrl);
+        //    }
+        //    return RedirectToAction("Index", "Home");
+        //}
+
+        //internal class ChallengeResult : HttpUnauthorizedResult
+        //{
+        //    public ChallengeResult(string provider, string redirectUri)
+        //        : this(provider, redirectUri, null)
+        //    {
+        //    }
+
+        //    public ChallengeResult(string provider, string redirectUri, string userId)
+        //    {
+        //        LoginProvider = provider;
+        //        RedirectUri = redirectUri;
+        //        UserId = userId;
+        //    }
+
+        //    public string LoginProvider { get; set; }
+        //    public string RedirectUri { get; set; }
+        //    public string UserId { get; set; }
+
+        //    public override void ExecuteResult(ControllerContext context)
+        //    {
+        //        var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
+        //        if (UserId != null)
+        //        {
+        //            properties.Dictionary[XsrfKey] = UserId;
+        //        }
+        //        context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
+        //    }
+        //}
+        //#endregion
+    }
+}
