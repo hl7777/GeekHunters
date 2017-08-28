@@ -2,7 +2,7 @@
 
 namespace GeekHunter.Data.Implementation.Responsitories
 {
-    public class BaseReponsitory
+    public abstract class BaseReponsitory:IDisposable
     {
         protected GeekHunterEntities ctx;
 
