@@ -10,5 +10,10 @@ namespace GeekHunter.Data.Implementation.Responsitories
         {
             ctx = context;
         }
+        
+        public void Dispose()
+        {
+            ctx.Dispose();
+        }
     }
 }
